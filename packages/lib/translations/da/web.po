@@ -4613,7 +4613,7 @@ msgstr ""
 
 #: apps/remix/app/components/embed/embed-document-completed.tsx
 msgid "Document Completed"
-msgstr ""
+msgstr "Dokumentet er underskrevet"
 
 #: packages/ui/components/document/document-email-checkboxes.tsx
 #: packages/ui/components/document/document-email-checkboxes.tsx
@@ -8129,7 +8129,7 @@ msgstr ""
 
 #: apps/remix/app/components/embed/embed-document-completed.tsx
 msgid "No further action is required"
-msgstr ""
+msgstr "Du skal ikke gøre mere"
 
 #: apps/remix/app/components/embed/embed-document-rejected.tsx
 #: apps/remix/app/routes/_recipient+/sign.$token+/rejected.tsx
@@ -9156,7 +9156,7 @@ msgstr ""
 
 #: apps/remix/app/components/embed/embed-document-completed.tsx
 msgid "Please follow any instructions provided within the parent application."
-msgstr ""
+msgstr "Du kan lukke siden. Når alle har skrevet under, får du det underskrevne dokument på mail."
 
 #: apps/remix/app/components/general/document-signing/document-signing-mobile-widget.tsx
 msgid "Please mark as viewed to complete"
@@ -13417,7 +13417,7 @@ msgstr "Ny tofaktorbekræftelse"
 #: apps/remix/app/components/tables/admin-email-transports-table.tsx
 #: apps/remix/app/components/tables/templates-table.tsx
 msgid "Type"
-msgstr ""
+msgstr "Skriv"
 
 #: packages/lib/constants/document.ts
 #: packages/ui/primitives/signature-pad/signature-pad.tsx
@@ -13807,7 +13807,7 @@ msgstr ""
 
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
 msgid "Upload"
-msgstr ""
+msgstr "Upload"
 
 #: packages/lib/constants/document.ts
 #: packages/ui/primitives/signature-pad/signature-pad.tsx
