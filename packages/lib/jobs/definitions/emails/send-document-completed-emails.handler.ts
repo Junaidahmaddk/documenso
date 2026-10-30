@@ -216,7 +216,8 @@ export const run = async ({ payload, io }: { payload: TSendDocumentCompletedEmai
       const template = createElement(DocumentCompletedEmailTemplate, {
         documentName: envelope.title,
         assetBaseUrl,
-        downloadLink: recipient.email === owner.email ? documentOwnerDownloadLink : downloadLink,
+        // Fairhomes: alle underskrivere (også ejeren) får linket til underskriftens slutside, ikke administrationssiden.
+        downloadLink,
         customBody:
           isDirectTemplate && envelope.documentMeta?.message
             ? renderCustomEmailTemplate(envelope.documentMeta.message, customEmailTemplate)
