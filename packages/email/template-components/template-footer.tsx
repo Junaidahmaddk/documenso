@@ -47,7 +47,14 @@ export const TemplateFooter = ({ isDocument = true, reportUrl }: TemplateFooterP
             return (
               <Fragment key={idx}>
                 {idx > 0 && <br />}
-                {line}
+                {/* Fairhomes: en mailadresse bliver et link i guld, så mailprogrammet ikke selv gør den blå. */}
+                {/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(line.trim()) ? (
+                  <Link className="text-primary no-underline" href={`mailto:${line.trim()}`}>
+                    {line.trim()}
+                  </Link>
+                ) : (
+                  line
+                )}
               </Fragment>
             );
           })}
@@ -56,8 +63,8 @@ export const TemplateFooter = ({ isDocument = true, reportUrl }: TemplateFooterP
 
       {branding.brandingEnabled && safeBrandingUrl && (
         <Text className="my-8 text-muted-foreground text-sm">
-          <Link href={safeBrandingUrl} target="_blank">
-            {safeBrandingUrl}
+          <Link className="text-primary no-underline" href={safeBrandingUrl} target="_blank">
+            {safeBrandingUrl.replace(/^https?:\/\//, '').replace(/\/$/, '')}
           </Link>
         </Text>
       )}
