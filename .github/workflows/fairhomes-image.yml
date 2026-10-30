@@ -1,0 +1,37 @@
+# Bygger Fairhomes' Documenso-image (dansk sprog) rent i CI og lægger det i ghcr.io.
+# Imaget kører på sign.fairhomes.dk; kildekoden er denne gren (AGPL §13).
+name: Fairhomes image
+on:
+  workflow_dispatch:
+  push:
+    branches: [fairhomes/da]
+    paths-ignore: ['README.md']
+permissions:
+  contents: read
+  packages: write
+concurrency:
+  group: fairhomes-image
+  cancel-in-progress: true
+jobs:
+  byg:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile
+          push: true
+          platforms: linux/amd64
+          tags: |
+            ghcr.io/junaidahmaddk/documenso:2.21.1-da
+            ghcr.io/junaidahmaddk/documenso:fairhomes-${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
