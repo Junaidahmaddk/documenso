@@ -3938,6 +3938,10 @@ msgstr "Daily"
 msgid "Danger Zone"
 msgstr "Danger Zone"
 
+#: packages/lib/constants/i18n.ts
+msgid "Danish"
+msgstr "Danish"
+
 #: apps/remix/app/components/general/app-command-menu.tsx
 msgid "Dark Mode"
 msgstr "Dark Mode"

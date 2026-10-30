@@ -1,7 +1,10 @@
 ###########################
 #     BASE CONTAINER      #
 ###########################
-FROM node:24-alpine3.23 AS base
+# Fairhomes: basisbilledet kan skiftes til et spejl (fx mirror.gcr.io/library/node:24-alpine3.23),
+# når Docker Hub afviser med 429. Standard er uændret.
+ARG NODE_IMAGE=node:24-alpine3.23
+FROM ${NODE_IMAGE} AS base
 
 RUN apk add --no-cache openssl
 RUN apk add --no-cache font-freefont

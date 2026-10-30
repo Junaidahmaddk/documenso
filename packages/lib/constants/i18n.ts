@@ -23,6 +23,10 @@ type SupportedLanguage = {
 };
 
 export const SUPPORTED_LANGUAGES: Record<string, SupportedLanguage> = {
+  da: {
+    short: 'da',
+    full: msg`Danish`,
+  },
   de: {
     short: 'de',
     full: msg`German`,

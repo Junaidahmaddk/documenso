@@ -1,3 +1,28 @@
+## Fairhomes-ændringer
+
+Dette er Fairhomes' fork af [Documenso](https://github.com/documenso/documenso), bygget fra tag `v2.21.1`.
+Forken driver signeringsplatformen på **sign.fairhomes.dk**. Documenso er udgivet under AGPL-3.0, og
+i henhold til licensens § 13 er denne kildekode den kode, der kører på den instans. Licensen (`LICENSE`)
+er uændret.
+
+Ændringer i forhold til upstream (gren `fairhomes/da`):
+
+- **Dansk sprog (`da`).** `da` er tilføjet til de understøttede sprog (`packages/lib/constants/locales.ts`,
+  `packages/lib/constants/i18n.ts`, Lingui-konfigurationen følger automatisk) med et nyt katalog i
+  `packages/lib/translations/da/web.po`. Kun det, modtageren møder, er oversat: underskriftssiden
+  (`/sign/<token>`, færdig, afvist, udløbet, venter), underskriftsdialogen, mails til modtagere
+  (invitation, påmindelse, færdig, afvist, annulleret) og underskriftscertifikatet i PDF'en. Resten
+  falder tilbage til engelsk. Sidetitlen på underskriftssiden er «Skriv under hos Fairhomes».
+- **Sprogvalg.** Dansk vælges som i upstream: `lang`-cookien, ellers browserens `Accept-Language`.
+  Mails og certifikat følger dokumentets `meta.language`, som nu også kan være `da` i API'et
+  (`/api/v2/envelope/create` og `/api/v2/envelope/distribute`).
+- **Dockerfile.** `docker/Dockerfile` har fået et build-argument `NODE_IMAGE` (standard
+  `node:24-alpine3.23`), så basisbilledet kan hentes fra et spejl, når Docker Hub afviser med 429.
+
+Ingen databaseændringer: `DocumentMeta.language` er en tekstkolonne, så `da` kræver ingen migration.
+
+---
+
 <img src="https://github.com/documenso/documenso/assets/13398220/a643571f-0239-46a6-a73e-6bef38d1228b" alt="Documenso Logo">
 
 <p align="center" style="margin-top: 20px">
