@@ -48,14 +48,31 @@ export const SignaturePadDraw = ({ className, value, onChange, ...props }: Signa
     } satisfies StrokeOptions;
   }, []);
 
+  // Fairhomes: punktet regnes om med lærredets faktiske skala (intern bredde / vist bredde) i stedet for den faste DPI.
+  // Lærredets opløsning sættes én gang ved visning; drejes telefonen, eller ændres dialogens bredde bagefter, ramte
+  // stregen ellers forkert (forskudt eller uden for feltet).
+  const getPoint = (event: MouseEvent | PointerEvent | TouchEvent) => {
+    const rect = $el.current?.getBoundingClientRect();
+    const scale = $el.current && rect && rect.width > 0 ? $el.current.width / rect.width : SIGNATURE_CANVAS_DPI;
+
+    return Point.fromEvent(event, scale, $el.current);
+  };
+
+  // Fairhomes: kun én finger tegner. En finger nummer to (fx håndfladen på en telefon) startede ellers en ny streg midt i.
+  const isSecondaryPointer = (event: MouseEvent | PointerEvent | TouchEvent) => 'isPrimary' in event && !event.isPrimary;
+
   const onMouseDown = (event: MouseEvent | PointerEvent | TouchEvent) => {
     if (event.cancelable) {
       event.preventDefault();
     }
 
+    if (isSecondaryPointer(event)) {
+      return;
+    }
+
     setIsPressed(true);
 
-    const point = Point.fromEvent(event, SIGNATURE_CANVAS_DPI, $el.current);
+    const point = getPoint(event);
 
     setCurrentLine([point]);
   };
@@ -65,11 +82,11 @@ export const SignaturePadDraw = ({ className, value, onChange, ...props }: Signa
       event.preventDefault();
     }
 
-    if (!isPressed) {
+    if (!isPressed || isSecondaryPointer(event)) {
       return;
     }
 
-    const point = Point.fromEvent(event, SIGNATURE_CANVAS_DPI, $el.current);
+    const point = getPoint(event);
     const lastPoint = currentLine[currentLine.length - 1];
 
     if (lastPoint && point.distanceTo(lastPoint) > 5) {
@@ -103,9 +120,13 @@ export const SignaturePadDraw = ({ className, value, onChange, ...props }: Signa
       event.preventDefault();
     }
 
+    if (isSecondaryPointer(event)) {
+      return;
+    }
+
     setIsPressed(false);
 
-    const point = Point.fromEvent(event, SIGNATURE_CANVAS_DPI, $el.current);
+    const point = getPoint(event);
 
     const newLines = [...lines];
 
@@ -241,7 +262,7 @@ export const SignaturePadDraw = ({ className, value, onChange, ...props }: Signa
         className={cn('h-full w-full', {
           'dark:hue-rotate-180 dark:invert': selectedColor === 'black',
         })}
-        style={{ touchAction: 'none' }}
+        style={{ touchAction: 'none', WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
         onPointerMove={(event) => onMouseMove(event)}
         onPointerDown={(event) => onMouseDown(event)}
         onPointerUp={(event) => onMouseUp(event)}
