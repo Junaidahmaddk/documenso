@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "mcp__Remote_Desktop_Commander__*",
+      "mcp__plugin_desktop-commander_desktop-commander__*",
+      "mcp__Vercel__get_*",
+      "mcp__Vercel__list_*",
+      "mcp__Vercel__search_*",
+      "mcp__Vercel__count_*",
+      "mcp__Vercel__aggregate_*",
+      "mcp__mcp_webdock_io__webdock_get_*",
+      "mcp__mcp_webdock_io__webdock_list_*",
+      "mcp__Supabase__list_*",
+      "mcp__Supabase__get_advisors",
+      "mcp__Supabase__get_project",
+      "mcp__Supabase__get_project_url",
+      "mcp__Supabase__get_edge_function",
+      "mcp__Supabase__search_docs",
+      "mcp__github__get_*",
+      "mcp__github__list_*",
+      "mcp__github__actions_get",
+      "mcp__github__actions_list",
+      "mcp__github__pull_request_read",
+      "mcp__github__pull_request_review_write",
+      "mcp__github__issue_read",
+      "mcp__github__issue_write",
+      "mcp__github__create_branch",
+      "mcp__github__create_pull_request",
+      "mcp__github__update_pull_request",
+      "mcp__github__update_pull_request_branch",
+      "mcp__github__add_issue_comment",
+      "mcp__github__add_comment_to_pending_review",
+      "mcp__github__add_reply_to_pull_request_comment",
+      "mcp__github__resolve_review_thread"
+    ],
+    "deny": [
+      "mcp__Remote_Desktop_Commander__set_config_value",
+      "mcp__plugin_desktop-commander_desktop-commander__set_config_value",
+      "mcp__Vercel__buy_domain",
+      "mcp__Vercel__create_or_transfer_domain",
+      "mcp__Vercel__get_project_deletion_link",
+      "mcp__Vercel__delete_drive",
+      "mcp__Vercel__revoke_kms_signing_key",
+      "mcp__mcp_webdock_io__webdock_create_server",
+      "mcp__mcp_webdock_io__webdock_delete_server",
+      "mcp__mcp_webdock_io__webdock_reinstall_server",
+      "mcp__mcp_webdock_io__webdock_archive_server",
+      "mcp__mcp_webdock_io__webdock_delete_archived_server",
+      "mcp__mcp_webdock_io__webdock_resize_server",
+      "mcp__mcp_webdock_io__webdock_restore_snapshot",
+      "mcp__mcp_webdock_io__webdock_patch_account_information",
+      "mcp__Supabase__delete_branch",
+      "mcp__Supabase__create_project",
+      "mcp__github__create_repository",
+      "mcp__github__delete_file"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Edit|Write|MultiEdit|NotebookEdit|mcp__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/prd-vagt.sh",
+            "timeout": 10,
+            "statusMessage": "PRD-vagt"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash|mcp__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/mail-vagt.sh",
+            "timeout": 10,
+            "statusMessage": "Mail-vagt"
+          }
+        ]
+      }
+    ]
+  }
+}
