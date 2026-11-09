@@ -49,7 +49,7 @@ sender_mail() {
   # En enkelt søge- eller tekstkommando uden kæde (grep sendmail, git commit -m "… smtp …") sender intet.
   local cmd
   cmd="$(jq -r '.command // .input // empty' <<< "$raa" 2>/dev/null)"
-  if [[ -n "$cmd" && "$cmd" != *[\;\&\|\`\<\>]* && "$cmd" != *'$('* && "$cmd" != *$'\n'* ]] \
+  if [[ -n "$cmd" && "$cmd" != *[\;\&\|\`\<\>]* && "$cmd" != *\$\(* && "$cmd" != *$'\n'* ]] \
      && [[ "$cmd" =~ ^[[:space:]]*(grep|egrep|rg|cat|less|head|tail|ls|wc|git[[:space:]]+(log|show|diff|grep|status|commit|add)|gh[[:space:]]+(pr|issue)[[:space:]]+(create|edit|comment|view))([[:space:]]|$) ]]; then
     return 1
   fi
@@ -62,7 +62,7 @@ sender_mail() {
   # digest, alarm og videresendelse (også i compose run på serveren).
   # Undtagelsen (--vis, --toer-koersel) gælder kun en enkelt kommando uden kæde, og kun de præcise flag.
   local en=0
-  [[ -n "$cmd" && "$cmd" != *[\;\&\|\`\<\>]* && "$cmd" != *'$('* && "$cmd" != *$'\n'* ]] && en=1
+  [[ -n "$cmd" && "$cmd" != *[\;\&\|\`\<\>]* && "$cmd" != *\$\(* && "$cmd" != *$'\n'* ]] && en=1
   if [[ "$lt" =~ digitalpost-(poll|videresend|alarm)|digitalpost\.(poller|videresend|alarm) ]]; then
     (( en )) && [[ " ${cmd,,} " =~ [[:space:]]--(vis|toer-koersel)[[:space:]] ]] || return 0
   fi

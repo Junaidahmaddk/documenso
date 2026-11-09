@@ -113,7 +113,7 @@ analyser_tekst() { # tekst → linjer «h <handling>» og «m <mål>»
   local x
   for x in "${h[@]}"; do echo "h $x"; done
   # Sammensat kommando (kæde, rør, baggrund, kommandosubstitution, flere linjer): PRD-vagten slipper den aldrig igennem.
-  if [[ "$t" == *';'* || "$t" == *'&'* || "$t" == *'|'* || "$t" == *'$('* || "$t" == *'`'* || "$t" == *'<('* \
+  if [[ "$t" == *';'* || "$t" == *'&'* || "$t" == *'|'* || "$t" == *\$\(* || "$t" == *'`'* || "$t" == *'<('* \
         || "$t" == *'>('* || "$t" == *$'\n'* ]]; then
     echo "k 1"
   fi
@@ -179,7 +179,7 @@ analyser_kald() { # navn input-json
         echo "m $(maal_alias "$x")"; done
       case "$kort" in
         execute_sql)
-          if jq -r '.query // ""' <<< "$inp" | tr 'A-Z' 'a-z' | grep -qE '(^|[^a-z_])(insert|update|delete|create|alter|drop|truncate|grant|revoke|merge|copy|call|do|vacuum|reindex|cluster|lock|comment|refresh|security)[[:space:](]|cron\.(schedule|unschedule|alter_job)|pg_terminate_backend|pg_cancel_backend|set_config|setval|nextval|pg_reload_conf'; then
+          if jq -r '.query // ""' <<< "$inp" | tr '[:upper:]' '[:lower:]' | grep -qE '(^|[^a-z_])(insert|update|delete|create|alter|drop|truncate|grant|revoke|merge|copy|call|do|vacuum|reindex|cluster|lock|comment|refresh|security)[[:space:](]|cron\.(schedule|unschedule|alter_job)|pg_terminate_backend|pg_cancel_backend|set_config|setval|nextval|pg_reload_conf'; then
             echo "h sql-skriv"; else echo "h laes"; fi ;;
         apply_migration) echo "h migrer" ;;
         deploy_edge_function) echo "h deploy" ;;
@@ -194,7 +194,7 @@ analyser_kald() { # navn input-json
       # Værtsfelter (alias, domæne, redirect): kendte mål (fairhomes.dk/.io, de kendte IP'er) tæller; andre værter
       # bliver «ukendt-vaert», så værdier aldrig ender i loggen. Værdier (env, filer, commitbeskeder) læses ikke.
       jq -r '[.. | objects | to_entries[] | select(.key | test("^(alias|aliases|domain|domains|redirect|name)$"; "i"))
-              | .value | if type == "array" then .[] else . end | strings] | .[]' <<< "$inp" | tr 'A-Z' 'a-z' \
+              | .value | if type == "array" then .[] else . end | strings] | .[]' <<< "$inp" | tr '[:upper:]' '[:lower:]' \
         | while read -r x; do
             case "$x" in
               *.fairhomes.dk | *.fairhomes.io | fairhomes.dk | fairhomes.io | 193.180.215.245 | 2.29.120.118 | 49.12.249.51) echo "m $(maal_alias "$x")" ;;
@@ -387,7 +387,7 @@ vurder() { # input-json på stdin → beslutnings-JSON på stdout (eller intet)
   case "$navn" in
     Edit | Write | MultiEdit | NotebookEdit | mcp__*__write_file | mcp__*__edit_block | mcp__*__move_file | mcp__*__write_pdf)
       if jq -r '[.file_path, .notebook_path, .path, .source, .destination] | map(select(type == "string")) | .[]' <<< "$inp" \
-           | while IFS= read -r sti; do realpath -m -- "$sti" 2>/dev/null || printf '%s\n' "$sti"; done | tr '\\' / \
+           | while IFS= read -r sti; do realpath -m -- "$sti" 2>/dev/null || printf '%s\n' "$sti"; done | tr "\\\\" / \
            | grep -qE "$vaern_re"; then
         svar ask "Skrivning til PRD-kontrakten, et hook eller settings.json: godkend kun, hvis indholdet svarer til den PRD, du har godkendt."
         return 0
@@ -638,7 +638,8 @@ selvtest() {
   jq '.handlinger += ["miljoe"]' "$KONTRAKT" > "$d/k3" && mv "$d/k3" "$KONTRAKT"
   t ask mcp__Vercel__create_project_env '{"idOrName":"prj_dp","requestBody":{"key":"X","value":"https://data-api.fairhomes.dk"}}'
   t ask mcp__Vercel__create_project_env '{"idOrName":"prj_dp","requestBody":{"key":"SENTRY","value":"https://a@o1.ingest.sentry.io/1"}}'
-  t deny mcp__Vercel__create_project_env '{"idOrName":"prj_dp","requestBody":{"key":"J","value":"x"},"teamId":"t","name":"eyJhbGciOi.eyJyb2xl.ZmVoemRr"}'
+  local falsk_jwt="ey""JhbGciOi.ey""Jyb2xl.ZmVoemRr"
+  t deny mcp__Vercel__create_project_env "$(jq -cn --arg n "$falsk_jwt" '{idOrName: "prj_dp", requestBody: {key: "J", value: "x"}, teamId: "t", name: $n}')"
   t allow Bash "{\"command\":\"ssh -F none claude@193.180.215.245 sudo  fh-compose sb-data restart rest\"}"
   t ask Bash '{"command":"cd /x/dealpipeline && gh pr merge 3"}'
   t ask Bash '{"command":"gh pr merge 12 -R junaidahmaddk/dealpipeline --auto"}'
@@ -650,7 +651,9 @@ selvtest() {
   jq '.maal += ["sb-triage"]' "$KONTRAKT" > "$d/k2" && mv "$d/k2" "$KONTRAKT"
   t allow Bash "{\"command\":\"ssh -F none claude@193.180.215.245 sudo fh-migrer triage supabase/migrations/x.sql $SHA\"}"
   echo "-- loggen"
-  t ask Bash '{"command":"SUPABASE_ACCESS_TOKEN=sbp_hemmelig123 curl -X POST https://sql.fairhomes.dk/q -d \"update a set b=1 where c=2\""}'
+  # Testværdierne bygges ved kørsel, så hemmelighedsskannere (gitleaks) ikke tager dem for rigtige nøgler.
+  local falsk_token="sbp""_""hemmelig123"
+  t ask Bash "$(jq -cn --arg c "SUPABASE_ACCESS_TOKEN=$falsk_token curl -X POST https://sql.fairhomes.dk/q -d \"update a set b=1 where c=2\"" '{command: $c}')"
   n=$((n + 1))
   if grep -qiE 'hemmelig123|hemmelig-vaerdi-123|eyjhbgcioi|sentry' "$FH_PRD_LOG"; then echo "  FEJL en værdi står i loggen"; fejl=$((fejl + 1)); else echo "  ok   ingen værdier i loggen"; fi
   n=$((n + 1))

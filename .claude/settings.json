@@ -22,14 +22,11 @@
       "mcp__github__actions_get",
       "mcp__github__actions_list",
       "mcp__github__pull_request_read",
-      "mcp__github__pull_request_review_write",
       "mcp__github__issue_read",
-      "mcp__github__issue_write",
       "mcp__github__create_branch",
       "mcp__github__create_pull_request",
       "mcp__github__update_pull_request",
       "mcp__github__update_pull_request_branch",
-      "mcp__github__add_issue_comment",
       "mcp__github__add_comment_to_pending_review",
       "mcp__github__add_reply_to_pull_request_comment",
       "mcp__github__resolve_review_thread"
@@ -53,7 +50,14 @@
       "mcp__Supabase__delete_branch",
       "mcp__Supabase__create_project",
       "mcp__github__create_repository",
-      "mcp__github__delete_file"
+      "mcp__github__delete_file",
+      "mcp__Vercel__get_project_env",
+      "mcp__Vercel__get_shared_env_var",
+      "mcp__Vercel__get_edge_config_token",
+      "mcp__Vercel__get_edge_config_tokens",
+      "mcp__Vercel__list_feature_flag_sdk_keys",
+      "mcp__Vercel__get_or_create_drive",
+      "mcp__mcp_webdock_io__webdock_get_cloudflare_credentials"
     ]
   },
   "hooks": {
